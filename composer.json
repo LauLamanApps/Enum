@@ -9,7 +9,7 @@
         },
         {
             "name": "Laurens Laman",
-            "email": "laurens.laman@werkspot.nl"
+            "email": "laurens.laman@llaman.nl"
         }
     ],
     "autoload": {
@@ -23,8 +23,7 @@
         }
     },
     "require": {
-        "php": ">=7.3",
-        "doctrine/inflector": "^2.0"
+        "php": ">=7.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.1"

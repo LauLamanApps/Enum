@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Werkspot\Enum;
 
 use BadMethodCallException;
-use Doctrine\Inflector\Inflector;
-use Doctrine\Inflector\InflectorFactory;
 use InvalidArgumentException;
 use ReflectionClass;
 use Werkspot\Enum\Util\ClassNameConverter;
@@ -42,7 +40,7 @@ abstract class AbstractEnum
     public static function __callStatic(string $methodName, array $arguments): self
     {
         foreach (self::getConstants() as $option => $value) {
-            $expectedMethodName = self::getInflector()->camelize(strtolower($option));
+            $expectedMethodName = self::camelize(strtolower($option));
             if ($expectedMethodName === $methodName) {
                 return new static($value);
             }
@@ -54,7 +52,7 @@ abstract class AbstractEnum
     public function __call(string $methodName, array $arguments)
     {
         foreach (self::getConstants() as $option => $value) {
-            $isaMethodName = 'is' . self::getInflector()->classify(strtolower($option));
+            $isaMethodName = 'is' . self::classify(strtolower($option));
             if ($isaMethodName === $methodName) {
                 return $this->equals(static::get($value));
             }
@@ -95,14 +93,21 @@ abstract class AbstractEnum
         return ClassNameConverter::stripNameSpace(static::class);
     }
 
-    private static function getInflector(): Inflector
-    {
-        return InflectorFactory::create()->build();
-    }
-
     private static function getConstants(): array
     {
-        return (new ReflectionClass(static::class))->getConstants();
+        $reflection = new ReflectionClass(static::class);
+
+        return $reflection->getConstants();
+    }
+
+    private static function classify(string $word): string
+    {
+        return str_replace([' ', '_', '-'], '', ucwords($word, ' _-'));
+    }
+
+    private static function camelize(string $word) : string
+    {
+        return lcfirst(self::classify($word));
     }
 
     private static function getValidOptionsAsString(): string
